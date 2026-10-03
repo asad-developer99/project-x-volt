@@ -1,0 +1,348 @@
+/* Volt Runners: a night race in the city. Near-black asphalt, one volt-lime light, condensed caps that lean forward. */
+
+/* The page glow: set by the Colour Lab (html style --glow), animates between colourways */
+@property --glow {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #c8ff1a;
+}
+:root {
+  --glow: #c8ff1a;
+  --nav-h: 96px; /* ticker 32 + bar 64 */
+  --slant: 4vw;
+  --cut: 22px;
+  --glass: rgba(18, 20, 23, 0.86);
+  --swap: 0.5s; /* Colour Lab: shoe, outline word, labels and glow all change on this one clock */
+  --swap-ease: cubic-bezier(0.33, 1, 0.68, 1);
+  transition: --glow var(--swap) var(--swap-ease);
+  interpolate-size: allow-keywords;
+}
+@media (max-width: 767px) {
+  :root {
+    --nav-h: 84px; /* ticker 28 + bar 56 */
+    --cut: 16px;
+  }
+}
+
+.font-display {
+  line-height: 0.9;
+  letter-spacing: 0.005em;
+}
+/* Forward lean for headings (a faux italic; Anton has no italic). In the components layer so `block` etc. can override the display */
+@layer components {
+  .lean {
+    display: inline-block;
+    transform: skewX(-8deg);
+  }
+}
+.split-word {
+  padding-inline: 0.06em;
+  margin-inline: -0.06em;
+}
+.tnum {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  color: var(--accent);
+}
+.eyebrow::before {
+  content: "";
+  width: 18px;
+  height: 2px;
+  background: currentColor;
+  transform: skewX(-30deg);
+}
+.label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Buttons: hard-edged, slanted ends, lime */
+.btn {
+  border-radius: 0;
+  padding: 1.05rem 1.8rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+}
+.btn-solid {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+.btn-outline {
+  border: 0;
+  color: var(--text);
+  background: rgba(243, 245, 239, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(243, 245, 239, 0.28);
+}
+.btn-outline::before {
+  background: var(--text);
+}
+.btn-outline:hover {
+  color: var(--bg);
+}
+.on-lime .btn-solid {
+  background: var(--bg);
+  color: var(--accent);
+}
+
+/* Chamfered (cut-corner) shapes */
+.chamfer {
+  clip-path: polygon(0 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% 100%, var(--cut) 100%, 0 calc(100% - var(--cut)));
+}
+/* Glass card with a 1px border that follows the cut corners: outer = border colour, inner = glass */
+.glass-edge {
+  background: rgba(243, 245, 239, 0.12);
+  transition: background-color 0.45s ease;
+}
+.glass-edge > .glass-fill {
+  position: absolute;
+  inset: 1px;
+  background: var(--glass);
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+}
+.is-hot .glass-edge,
+.glass-edge.is-hot {
+  background: var(--accent);
+}
+
+/* Sticker tags */
+.sticker {
+  display: inline-block;
+  padding: 0.35rem 0.6rem 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: var(--accent);
+  color: var(--accent-text);
+  transform: rotate(-4deg);
+}
+
+/* Diagonal section edges */
+.slant-bottom {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--slant)), 0 100%);
+}
+.slant-both {
+  clip-path: polygon(0 var(--slant), 100% 0, 100% calc(100% - var(--slant)), 0 100%);
+}
+.slant-top {
+  clip-path: polygon(0 var(--slant), 100% 0, 100% 100%, 0 100%);
+}
+
+/* Outlined display text */
+.outline-text {
+  color: transparent;
+  -webkit-text-stroke: 1.5px currentColor;
+}
+
+/* No sideways scrolling on phones, without breaking position: sticky in iOS Safari:
+   `hidden` on body (engine default) makes Safari treat body as a scroll box, so the pinned
+   Colour Lab and tech cards stopped sticking. `clip` cuts the overflow without that side effect. */
+body {
+  overflow-x: clip;
+}
+
+/* phones: skip the effects that are expensive to paint at 3× pixel density */
+@media (max-width: 767px) {
+  .glass-edge > .glass-fill {
+    background: rgba(18, 20, 23, 0.95);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .grain::after {
+    display: none;
+  }
+}
+
+/* ---------- page glow (fixed, behind everything) ---------- */
+.page-glow {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(40% 45% at 92% 18%, color-mix(in srgb, var(--glow) 16%, transparent), transparent 70%),
+    radial-gradient(45% 50% at 6% 88%, color-mix(in srgb, var(--glow) 12%, transparent), transparent 70%);
+}
+
+/* ---------- ticker ---------- */
+.volt-ticker {
+  animation: ticker 28s linear infinite;
+}
+.live-dot {
+  animation: live 1.4s ease-in-out infinite;
+}
+@keyframes live {
+  50% { opacity: 0.25; }
+}
+.bag-bump {
+  animation: bag-bump 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes bag-bump {
+  30% { transform: scale(1.5); }
+}
+
+/* ---------- hero: a living photo ---------- */
+.hero-zoom {
+  transform-origin: 70% 60%;
+  animation: hero-zoom 18s ease-in-out infinite alternate;
+  will-change: transform;
+}
+@keyframes hero-zoom {
+  from { transform: scale(1.04) translate3d(0, 0, 0); }
+  to { transform: scale(1.12) translate3d(-1.2%, -0.8%, 0); }
+}
+.streak {
+  position: absolute;
+  left: 0;
+  height: 2px;
+  border-radius: 2px;
+  filter: blur(1.5px);
+  mix-blend-mode: screen;
+  opacity: 0;
+  animation: streak linear infinite;
+  will-change: transform, opacity;
+}
+@keyframes streak {
+  0% { transform: translate3d(110vw, 0, 0); opacity: 0; }
+  12% { opacity: var(--o, 0.8); }
+  80% { opacity: var(--o, 0.8); }
+  100% { transform: translate3d(-60vw, 0, 0); opacity: 0; }
+}
+.hero-glow {
+  animation: hero-glow 3.2s ease-in-out infinite alternate;
+  will-change: opacity, transform;
+}
+@keyframes hero-glow {
+  from { opacity: 0.35; transform: scale(0.94); }
+  to { opacity: 0.68; transform: scale(1.06); }
+}
+
+/* ---------- colour lab ---------- */
+.lab-shoe,
+.cw-swap {
+  transition-property: transform, opacity, color, background-color, box-shadow, width, visibility;
+  transition-duration: var(--swap);
+  transition-timing-function: var(--swap-ease);
+}
+/* text that is swapped out (label, counter) fades in on the same clock */
+/* the outgoing shoe / word clears in half the time, so two colourways never smear together,
+   then is hidden (not painted at all): only the current and the outgoing colourway cost anything */
+.cw-out {
+  visibility: hidden;
+  transition-duration: calc(var(--swap) * 0.45);
+}
+.cw-in {
+  display: inline-block;
+  animation: cw-in var(--swap) var(--swap-ease) both;
+}
+@keyframes cw-in {
+  from { opacity: 0; transform: translateX(10px) skewX(var(--sk, 0deg)); }
+  to { opacity: 1; transform: translateX(0) skewX(var(--sk, 0deg)); }
+}
+.cw-in.lean {
+  --sk: -8deg;
+}
+.lab-float {
+  animation: lab-float 3.6s ease-in-out infinite alternate;
+}
+@keyframes lab-float {
+  from { transform: translate3d(0, -1.2%, 0) rotate(-1.5deg); }
+  to { transform: translate3d(0, 1.2%, 0) rotate(0.5deg); }
+}
+
+/* ---------- size picker ---------- */
+.size-btn {
+  position: relative;
+  transition: background-color 0.35s ease, color 0.35s ease, box-shadow 0.35s ease;
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.size-btn:hover:not(:disabled) {
+  box-shadow: inset 0 0 0 1px var(--text);
+}
+.size-btn.is-on {
+  background: var(--accent);
+  color: var(--accent-text);
+  box-shadow: none;
+}
+.size-btn:disabled {
+  color: #5b605a;
+  background: linear-gradient(to top right, transparent calc(50% - 0.5px), #3a3f3a 50%, transparent calc(50% + 0.5px));
+}
+.tap-ring {
+  position: absolute;
+  inset: -6px;
+  border: 2px solid var(--accent);
+  pointer-events: none;
+  animation: tap 0.7s ease-out forwards;
+}
+@keyframes tap {
+  from { opacity: 1; transform: scale(0.7); }
+  to { opacity: 0; transform: scale(1.25); }
+}
+
+/* ---------- collections: slanted strips ---------- */
+@media (min-width: 768px) {
+  .strip {
+    clip-path: polygon(2.8vw 0, 100% 0, calc(100% - 2.8vw) 100%, 0 100%);
+  }
+}
+@media (max-width: 767px) {
+  .strip {
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), 0 100%);
+  }
+}
+
+/* ---------- footer ---------- */
+.letter-input {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid rgba(243, 245, 239, 0.3);
+  outline: none;
+  color: inherit;
+}
+.letter-input::placeholder {
+  color: var(--muted);
+}
+.letter-input:focus {
+  border-color: var(--accent);
+}
+
+/* ?static=1 (class set in site/Page.tsx) and reduced motion: everything still */
+.is-static .hero-zoom,
+.is-static .streak,
+.is-static .hero-glow,
+.is-static .volt-ticker,
+.is-static .live-dot,
+.is-static .lab-float {
+  animation: none;
+}
+.is-static .streak {
+  display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-zoom,
+  .streak,
+  .hero-glow,
+  .volt-ticker,
+  .live-dot,
+  .lab-float {
+    animation: none;
+  }
+  .streak {
+    display: none;
+  }
+}

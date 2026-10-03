@@ -1,0 +1,166 @@
+/* Meridian: a printed horology catalogue. Ivory paper, ink Bodoni, hairlines, dark "night plates". */
+
+:root {
+  --plate: #070605; /* matches the black of the watch footage */
+  --plate-radius: 22px;
+  --ink-soft: rgba(29, 26, 22, 0.6);
+}
+
+.font-display {
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+/* Word-by-word reveal masks: room for italic overhangs (the "y" of *yours*) */
+.font-display .split-word {
+  padding-inline: 0.08em;
+  margin-inline: -0.08em;
+}
+
+/* Catalogue labels: small caps-like, tracked Manrope */
+.eyebrow {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  color: var(--accent);
+}
+.ref {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+.tnum {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* Buttons: ink pills with a hairline, bronze on hover */
+.btn {
+  border-radius: 999px;
+  padding: 1rem 1.7rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+}
+.btn-solid {
+  background: var(--text);
+  color: var(--bg);
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+.btn-solid:hover {
+  background: var(--accent);
+}
+.btn-outline {
+  border-color: var(--text);
+  color: var(--text);
+}
+.btn-outline::before {
+  background: var(--text);
+}
+.btn-outline:hover {
+  color: var(--bg);
+}
+.on-plate .btn-outline {
+  border-color: rgba(243, 236, 225, 0.5);
+  color: #f3ece1;
+}
+.on-plate .btn-outline::before {
+  background: #f3ece1;
+}
+.on-plate .btn-outline:hover {
+  color: var(--plate);
+}
+
+/* A dark photographic plate sitting on the paper */
+.plate {
+  background: var(--plate);
+  border-radius: var(--plate-radius);
+  overflow: hidden;
+  color: #f3ece1;
+}
+
+/* Hairline rules */
+.rule {
+  height: 1px;
+  background: var(--line);
+}
+
+/* Nav: switches to light text while a dark plate is under it */
+.maison-nav {
+  transition: color 0.5s ease, background-color 0.5s ease, border-color 0.5s ease;
+}
+.maison-nav.is-dark {
+  color: #f3ece1;
+  background-color: transparent;
+  border-color: rgba(243, 236, 225, 0.14);
+}
+
+/* Text filled with a photograph (MaskReveal) */
+.mask-text {
+  font-variation-settings: "opsz" 6; /* sturdier hairlines so more of the photo shows */
+  background-size: cover;
+  background-position: 30% 40%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Seconds hand that ticks (Heartbeat) */
+.tick-hand {
+  transform-origin: 50% 50%;
+  animation: tick 60s steps(60) infinite;
+}
+@keyframes tick {
+  to { transform: rotate(360deg); }
+}
+
+/* Configurator progress ticks */
+.dial-progress {
+  transform-origin: left;
+  animation: dial-fill linear forwards;
+}
+@keyframes dial-fill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* FAQ (hairline accordion) */
+.care-faq > summary::-webkit-details-marker {
+  display: none;
+}
+/* Answers slide open instead of popping (Chrome 131+) */
+:root {
+  interpolate-size: allow-keywords;
+}
+.care-faq::details-content {
+  height: 0;
+  overflow: clip;
+  transition: height 0.7s cubic-bezier(0.65, 0, 0.35, 1), content-visibility 0.7s allow-discrete;
+}
+.care-faq[open]::details-content {
+  height: auto;
+}
+
+/* Footer newsletter input */
+.letter-input {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid rgba(243, 236, 225, 0.35);
+  outline: none;
+  color: inherit;
+}
+.letter-input::placeholder {
+  color: rgba(243, 236, 225, 0.55);
+}
+.letter-input:focus {
+  border-color: #f3ece1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tick-hand,
+  .dial-progress {
+    animation: none;
+  }
+}
